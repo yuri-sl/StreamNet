@@ -1,0 +1,84 @@
+create table usuario(
+	id bigint primary key,
+	avatar text,
+	username varchar(100) not null
+);
+
+drop table usuario;
+
+create table tweet(
+	id bigint,
+	text varchar(280) not null,
+	user_id int,
+	
+	foreign key (user_id) references usuario(id)
+);
+
+
+drop table usuario cascade;
+drop table tweet;
+
+alter table tweet
+ add constraint fk_tweet_usuario
+ foreign key (user_id) references usuario(id);
+
+select * from usuario;
+select * from tweet;
+select * from tweet join usuario on tweet.user_id = usuario(id);
+
+drop table tweets;
+
+alter table tweet
+	drop constraint if exists fk_tweet_usuario;
+
+alter table usuario
+	alter column id type bigint
+	using id::bigint;
+
+alter table tweet 
+	alter column id type bigint
+	using id::bigint;
+
+alter table tweet
+	alter column user_id type bigint
+	using user_id::bigint;
+
+alter table tweet
+	add constraint fk_tweet_usuario
+	foreign key (user_id) references usuario(id);
+
+select * from tweet;
+select * from usuario;
+
+insert into(id,username,avatar) usuario values(0,"alberto","https://upload.wikimedia.org/wikipedia/pt/a/ac/Vegeta.jpg");
+
+INSERT INTO usuario (username, avatar)
+VALUES ('alberto', 'https://upload.wikimedia.org/wikipedia/pt/a/ac/Vegeta.jpg');
+
+INSERT INTO usuario (id, username, avatar)
+VALUES (0, 'alberto', 'https://upload.wikimedia.org/wikipedia/pt/a/ac/Vegeta.jpg');
+
+
+
+
+
+
+select * from usuario;
+select * from tweet;
+select * from tweet t inner join usuario u on u.id = t.user_id;
+
+drop table if exists tweet;
+drop table if exists usuario;
+
+create table usuario(
+	id bigserial primary key,
+	avatar text,
+	username varchar(100) not null
+);
+
+create table tweet(
+	id bigserial primary key,
+	text varchar(280) not null,
+	user_id bigint not null,
+	constraint fk_tweet_usuario foreign key (user_id) references usuario(id)
+);
