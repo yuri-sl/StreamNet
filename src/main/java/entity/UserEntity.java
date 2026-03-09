@@ -30,9 +30,11 @@ public class UserEntity {
     private String username;
 
     @OneToMany(mappedBy = "follower")
+    @Builder.Default
     private List<FollowerEntity> followerList = new ArrayList<>();
 
     @OneToMany(mappedBy = "followed")
+    @Builder.Default
     private List<FollowerEntity> followedList = new ArrayList<>();
 
 }

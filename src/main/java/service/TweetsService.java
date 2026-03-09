@@ -13,6 +13,7 @@ import repository.TweetsRepository;
 import repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @ApplicationScoped
@@ -54,6 +55,13 @@ public class TweetsService {
     }
     public List<TweetsEntity> buscarTweetsUsuariosPorId(Long idUsuario){
         return tweetsRepository.fetchTweetsByUserId(idUsuario);
+    }
+    public TweetsEntity verificarTweetExiste(long postId){
+        Optional<TweetsEntity> tweetEncontrado = tweetsRepository.findByIdOptional(postId);
+        if(tweetEncontrado.isEmpty()){
+            throw new IllegalArgumentException("Não foi encontrado tweet valido");
+        }
+        return tweetEncontrado.get();
     }
 
 }

@@ -25,10 +25,8 @@ class UsuarioTest {
     @Inject
     UserService userService;
 
-    @TestHTTPResource("/user")
+    @TestHTTPResource("/users")
     URI apiUrl;
-    @Inject
-    UserRepository userRepository;
 
     @Test
     @DisplayName("Deve conseguir criar um novo usuário")
@@ -44,7 +42,7 @@ class UsuarioTest {
                     .contentType(ContentType.JSON)
                     .body(dados)
                 .when()
-                    .post("http://localhost:8081/users")
+                    .post(apiUrl)
                 .then()
                     .extract().response();
 
@@ -54,6 +52,8 @@ class UsuarioTest {
         assertNotNull(dadosResposta.getId());
         assertEquals(dados.getUsername(),dadosResposta.getUsername());
         assertEquals(dados.getAvatar(),dadosResposta.getAvatar());
+        assertEquals(0,dadosResposta.getFollowersList().size());
+        assertEquals(0,dadosResposta.getFollowingList().size());
     }
 
     @Test
@@ -67,7 +67,7 @@ class UsuarioTest {
                 .contentType(ContentType.JSON)
                 .body(dados)
                 .when()
-                .post("http://localhost:8081/users")
+                .post(apiUrl)
                 .then()
                 .extract().response();
 
@@ -87,7 +87,7 @@ class UsuarioTest {
                 .contentType(ContentType.JSON)
                 .body(dadosInput)
                 .when()
-                .post("http://localhost:8081/users")
+                .post(apiUrl)
                 .then()
                 .extract().response();
 

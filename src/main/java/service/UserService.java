@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @ApplicationScoped
@@ -19,12 +20,24 @@ public class UserService {
 
     final UserRepository userRepository;
 
-    public UserEntity fazerLoginSistema(String username){
+    public UserEntity verificarUsuarioExiste(String username){
         UserEntity usuarioEncontrado = userRepository.buscarUsuarioPorNome(username);
         if(usuarioEncontrado == null) {
             throw new IllegalArgumentException("usuário não encontrado");
         }
         return usuarioEncontrado;
+    }
+    public UserEntity verificarUsuarioExiste(long userId){
+        Optional<UserEntity> usuarioEncontrado = userRepository.findByIdOptional(userId);
+        if(usuarioEncontrado.isEmpty()) {
+            throw new IllegalArgumentException("usuário não encontrado");
+        }
+        return usuarioEncontrado.get();
+    }
+
+    public UserEntity fazerLoginSistema(String username){
+
+        return verificarUsuarioExiste(username);
     }
 
     @Transactional

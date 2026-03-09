@@ -19,11 +19,17 @@ public class CommentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "dono_post")
+    @JoinColumn(name = "post_owner")
+    @ManyToOne
     private UserEntity postOwner;
 
-    @Column(name = "usuario_comenta")
+    @JoinColumn(name = "comment_owner")
+    @ManyToOne
     private UserEntity commentUser;
+
+    @JoinColumn(name = "post")
+    @ManyToOne
+    private TweetsEntity postCommented;
 
     @Column(name = "upvotes")
     @Builder.Default
@@ -36,6 +42,9 @@ public class CommentEntity {
     @Column(name = "data_hora_publicacao")
     @Builder.Default
     private LocalDateTime publishingTime = LocalDateTime.now();
+
+    @Column(name = "comment_text")
+    private String commentText;
 
 
 }
