@@ -1,11 +1,14 @@
 package DTO.responses;
 
 
+import entity.CommentEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,8 +16,13 @@ import lombok.NoArgsConstructor;
 @Data
 @ApplicationScoped
 public class CriarTweetDTOResponse {
-    public long id;
-    public String text;
-    public CriarUsuarioDTOResponse criarUsuarioDTOResponse;
+    private long id;
+    private String text;
+    private CriarUsuarioDTOResponse criarUsuarioDTOResponse;
+    private int upvotes;
+    private int downvotes;
+    private List<CommentEntity> listaComentarios;
+
+
 
 }

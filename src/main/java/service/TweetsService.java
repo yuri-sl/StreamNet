@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import repository.TweetsRepository;
 import repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +46,7 @@ public class TweetsService {
                     .id(tweetCriado.getId())
                     .text(tweetCriado.getText())
                     .criarUsuarioDTOResponse(dtoUsuarioEncontrado)
+                    .listaComentarios(new ArrayList<>())
                     .build();
         } catch (RuntimeException e) {
             throw new RuntimeException(e);

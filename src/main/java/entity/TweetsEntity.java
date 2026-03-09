@@ -42,8 +42,8 @@ public class TweetsEntity {
     @Builder.Default
     private int downvotes = 0;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "comentarios",nullable = false)
+    @ManyToOne( fetch = FetchType.EAGER)
+    @JoinColumn(name = "comentarios")
     private CommentEntity listaComentarios;
 
 }
