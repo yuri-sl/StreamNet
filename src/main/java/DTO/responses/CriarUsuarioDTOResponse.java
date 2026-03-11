@@ -1,6 +1,7 @@
 package DTO.responses;
 
 
+import entity.FollowerEntity;
 import entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,7 @@ public class CriarUsuarioDTOResponse {
     private String avatar;
     private String username;
     @Builder.Default
-    private List<UserEntity> followersList = new ArrayList<>();
+    private List<FollowerEntity> followersList = new ArrayList<>();
     @Builder.Default
-    private List<UserEntity> followingList = new ArrayList<>();
+    private List<FollowerEntity> followingList = new ArrayList<>();
 }

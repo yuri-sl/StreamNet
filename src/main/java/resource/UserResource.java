@@ -1,6 +1,8 @@
 package resource;
 
+import DTO.requests.CriarTweetDTORequest;
 import DTO.requests.CriarUsuarioDTORequest;
+import DTO.responses.CriarTweetDTOResponse;
 import DTO.responses.CriarUsuarioDTOResponse;
 import DTO.responses.FetchUserResponseDTO;
 import DTO.responses.HealthDTOResponse;
@@ -26,14 +28,9 @@ public class UserResource {
     @POST
     public RestResponse<?> criarUsuarioNovo(@RequestBody CriarUsuarioDTORequest usuarioDTO){
         try {
-            if(usuarioDTO.getUsername() == null || usuarioDTO.getAvatar() == null){
-                return RestResponse.status(Response.Status.BAD_REQUEST,"Todos os campos devem estar preenchidos");
-            }
-            if(usuarioDTO.getUsername().isBlank() || usuarioDTO.getAvatar().isBlank() ){
-                return RestResponse.status(Response.Status.BAD_REQUEST,"Todos os campos devem ter conteúdo");
-            }
-            CriarUsuarioDTOResponse criarUsuarioDTOResponse = userService.adicionarUsuario(usuarioDTO);
-            return RestResponse.status(Response.Status.CREATED,criarUsuarioDTOResponse);
+            return RestResponse.status(Response.Status.CREATED,userService.adicionarUsuario(usuarioDTO));
+        }catch (IllegalArgumentException e) {
+            return RestResponse.status(Response.Status.BAD_REQUEST,e.getMessage());
         }
         catch (RuntimeException e) {
             return RestResponse.status(Response.Status.CONFLICT,e.getMessage());
@@ -65,5 +62,22 @@ public class UserResource {
                 .mensagem("Estou retornando uma mensagem")
                 .build();
         return RestResponse.status(RestResponse.Status.OK,healthDTOResponse);
+    }
+
+    @PUT
+    public RestResponse<?> editarUsuario(CriarUsuarioDTORequest dadosInput){
+        try{
+            return RestResponse.status(Response.Status.fromStatusCode(201),userService.updateUserOperation(dadosInput));
+        } catch (IllegalArgumentException e) {
+            return RestResponse.status(Response.Status.BAD_REQUEST,e.getMessage());
+        }
+
+    }
+
+    @DELETE
+    public RestResponse<?> deletarUsuarioPorId(){
+        try{
+
+        }
     }
 }
