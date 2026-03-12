@@ -21,4 +21,11 @@ public class CriarUsuarioDTOResponse {
     private List<FollowerEntity> followersList = new ArrayList<>();
     @Builder.Default
     private List<FollowerEntity> followingList = new ArrayList<>();
+
+    public static CriarUsuarioDTOResponse mapearEntidadeDTO(UserEntity u){
+        return CriarUsuarioDTOResponse.builder()
+                .id(u.getId())
+                .avatar(u.getAvatar())
+                .username(u.getUsername()).build();
+    }
 }

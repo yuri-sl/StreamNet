@@ -94,13 +94,11 @@ public class UserService {
                 .id(usuario.getId())
                 .avatar(usuario.getAvatar())
                 .username(usuario.getUsername())
-                .followersList(usuario.getFollowerList())
-                .followingList(usuario.getFollowedList())
                 .build();
     }
 
     @Transactional
-    public UserEntity deleteUserById(long userId){
+    public void deleteUserById(long userId){
         this.userRepository.deleteById(userId);
 
     }
