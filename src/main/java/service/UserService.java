@@ -3,6 +3,7 @@ package service;
 import DTO.requests.CriarUsuarioDTORequest;
 import DTO.responses.CriarUsuarioDTOResponse;
 import DTO.responses.FetchUserResponseDTO;
+import DTO.responses.FollowerDTO;
 import entity.UserEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -58,7 +59,8 @@ public class UserService {
                    .id(userCreated.getId())
                    .avatar(userCreated.getAvatar())
                    .username(userCreated.getUsername())
-                   .build();
+                   .followersList(FollowerDTO.mapearEntidadeDTO(userCreated.getFollowedList()))
+                   .followingList(FollowerDTO.mapearEntidadeDTO(userCreated.getFollowerList())).build();
        } else{
            throw new java.lang.RuntimeException("Usuario ja existente no sistema");
        }

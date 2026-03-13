@@ -29,12 +29,12 @@ public class UserEntity {
     @Column(name = "username",nullable = false)
     private String username;
 
-//    @OneToMany(mappedBy = "follower")
-//    @Builder.Default
-//    private List<FollowerEntity> followerList = new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "followed")
-//    @Builder.Default
-//    private List<FollowerEntity> followedList = new ArrayList<>();
+    @OneToMany(mappedBy = "follower")
+    @Builder.Default
+    private List<FollowerEntity> followerList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "followed")
+    @Builder.Default
+    private List<FollowerEntity> followedList = new ArrayList<>();
 
 }

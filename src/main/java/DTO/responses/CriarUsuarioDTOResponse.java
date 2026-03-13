@@ -18,14 +18,17 @@ public class CriarUsuarioDTOResponse {
     private String avatar;
     private String username;
     @Builder.Default
-    private List<FollowerEntity> followersList = new ArrayList<>();
+    private List<FollowerDTO> followersList = new ArrayList<>();
     @Builder.Default
-    private List<FollowerEntity> followingList = new ArrayList<>();
+    private List<FollowerDTO> followingList = new ArrayList<>();
 
     public static CriarUsuarioDTOResponse mapearEntidadeDTO(UserEntity u){
         return CriarUsuarioDTOResponse.builder()
                 .id(u.getId())
                 .avatar(u.getAvatar())
-                .username(u.getUsername()).build();
+                .username(u.getUsername())
+                .followersList(FollowerDTO.mapearEntidadeDTO(u.getFollowedList()))
+                .followingList(FollowerDTO.mapearEntidadeDTO(u.getFollowerList()))
+                .build();
     }
 }
