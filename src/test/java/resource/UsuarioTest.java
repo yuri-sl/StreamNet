@@ -1,12 +1,14 @@
 package resource;
 
 import DTO.requests.CriarUsuarioDTORequest;
+import DTO.responses.CriarTweetDTOResponse;
 import DTO.responses.CriarUsuarioDTOResponse;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import repository.UserRepository;
 import service.UserService;
@@ -28,30 +30,60 @@ class UsuarioTest {
     @TestHTTPResource("/users")
     URI apiUrl;
 
-    @Test
-    @DisplayName("Deve conseguir criar um novo usuário")
-    @Order(1)
-    public void createUserTest(){
-        CriarUsuarioDTORequest dados = CriarUsuarioDTORequest.builder()
+    CriarUsuarioDTORequest dados_user1;
+    CriarUsuarioDTORequest dados_user2;
+    CriarUsuarioDTORequest dados_user3;
+
+    CriarUsuarioDTORequest dados_incompletos_user2;
+
+    CriarUsuarioDTOResponse resposta_user1;
+    CriarUsuarioDTOResponse resposta_user2;
+    CriarUsuarioDTOResponse resposta_user3;
+
+    @BeforeEach()
+    @Transactional
+    public void setUp(){
+        userRepository.deleteAll();
+
+        dados_user1 = CriarUsuarioDTORequest.builder()
                 .username("Bambietta")
                 .avatar("Basterbine.jpg")
                 .build();
 
+        dados_user2 = CriarUsuarioDTORequest.builder()
+                .username("Goku")
+                .avatar("Gokuu.jpg")
+                .build();
+
+        dados_incompletos_user2 = CriarUsuarioDTORequest.builder()
+                .username("").avatar("goku.jpg").build();
+
+        dados_user3 = CriarUsuarioDTORequest.builder()
+                .username("gohan").avatar("gohan.jpg").build();
+
+    }
+
+    @Test
+    @DisplayName("Deve conseguir criar um novo usuário")
+    @Order(1)
+    public void createUserTest(){
+
         Response resposta =
                 given()
                     .contentType(ContentType.JSON)
-                    .body(dados)
+                    .body(dados_user1)
                 .when()
                     .post(apiUrl)
                 .then()
                     .extract().response();
 
         CriarUsuarioDTOResponse dadosResposta = resposta.as(CriarUsuarioDTOResponse.class);
+        resposta_user1 = resposta.as(CriarUsuarioDTOResponse.class);
 
         assertEquals(201,resposta.getStatusCode());
         assertNotNull(dadosResposta.getId());
-        assertEquals(dados.getUsername(),dadosResposta.getUsername());
-        assertEquals(dados.getAvatar(),dadosResposta.getAvatar());
+        assertEquals(dados_user1.getUsername(),dadosResposta.getUsername());
+        assertEquals(dados_user1.getAvatar(),dadosResposta.getAvatar());
         assertEquals(0,dadosResposta.getFollowersList().size());
         assertEquals(0,dadosResposta.getFollowingList().size());
     }
@@ -60,41 +92,57 @@ class UsuarioTest {
     @DisplayName("Deve gerar bad Request ao tentar criar um usuário com dados incompletos")
     @Order(2)
     public void failCreateUserTest(){
-        CriarUsuarioDTORequest dados = CriarUsuarioDTORequest.builder()
-                .username("").avatar("goku.jpg").build();
 
-        Response respostaRequisicao = given()
+
+        Response resposta = given()
                 .contentType(ContentType.JSON)
-                .body(dados)
+                .body(dados_incompletos_user2)
                 .when()
                 .post(apiUrl)
                 .then()
                 .extract().response();
 
-        assertEquals(400,respostaRequisicao.getStatusCode());
+        assertEquals(400,resposta.getStatusCode());
     }
 
     @Test
     @DisplayName("Deve dar erro de conflito ao tentar cadastrar usuario que ja existe no sistema")
     @Order(3)
     public void failCreateDuplicateUserTest(){
-        CriarUsuarioDTORequest dadosInput = CriarUsuarioDTORequest.builder()
-                .username("gohan").avatar("gohan.jpg").build();
+        userService.adicionarUsuario(dados_user3);
 
-        userService.adicionarUsuario(dadosInput);
 
-        var response = given()
+        var resposta = given()
                 .contentType(ContentType.JSON)
-                .body(dadosInput)
+                .body(dados_user3)
                 .when()
                 .post(apiUrl)
                 .then()
                 .extract().response();
 
-        assertEquals(409,response.getStatusCode());
-
+        assertEquals(409,resposta.getStatusCode());
 
     }
+
+    @Test
+    @DisplayName("Should delete a user Successfully")
+    public void deletarUsuarioPorId(){
+        CriarUsuarioDTOResponse dados =userService.adicionarUsuario(dados_user3);
+
+
+        var response =
+                given()
+                    .contentType(ContentType.JSON)
+                    .pathParam("userId",dados.getId())
+                .when()
+                    .delete(apiUrl+ "/{userId}")
+                .then()
+                        .statusCode(204)
+                                .extract().response();
+
+        assertEquals(204,response.getStatusCode());
+    }
+
 
 
 

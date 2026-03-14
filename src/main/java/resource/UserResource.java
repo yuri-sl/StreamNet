@@ -79,7 +79,7 @@ public class UserResource {
     public RestResponse<?> deletarUsuarioPorId(@PathParam("userId") long userId){
         try{
             userService.deleteUserById(userId);
-            return RestResponse.status(Response.Status.fromStatusCode(201),"Deleted");
+            return RestResponse.status(Response.Status.fromStatusCode(204),"Deleted");
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
