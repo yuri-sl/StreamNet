@@ -16,19 +16,25 @@ import java.util.List;
 @Builder
 public class FollowerDTO {
     private long id;
-    private CriarUsuarioDTOResponse follower;
-    private CriarUsuarioDTOResponse followed;
     private LocalDateTime dateFollowed;
     private boolean isBlocked;
+
+    private long followerId;
+    private String followerUsername;
+
+    private Long followedId;
+    private String followedUsername;
 
 
     public static FollowerDTO mapearEntidadeDTO(FollowerEntity followerE){
         return FollowerDTO.builder()
                 .id(followerE.getId())
-                .follower( CriarUsuarioDTOResponse.mapearEntidadeDTO(followerE.getFollower()))
-                .followed(CriarUsuarioDTOResponse.mapearEntidadeDTO(followerE.getFollowed()))
                 .dateFollowed(followerE.getDateFollowed())
                 .isBlocked(followerE.isBlocked())
+                .followerId(followerE.getFollower().getId())
+                .followerUsername(followerE.getFollowed().getUsername())
+                .followedId(followerE.getFollowed().getId())
+                .followedUsername(followerE.getFollowed().getUsername())
                 .build();
     }
     public static List<FollowerDTO> mapearEntidadeDTO(List<FollowerEntity> listaFollowers){
