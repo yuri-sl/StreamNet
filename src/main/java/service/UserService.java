@@ -82,9 +82,9 @@ public class UserService {
     }
 
     @Transactional
-    public CriarUsuarioDTOResponse updateUserOperation(CriarUsuarioDTORequest dados){
+    public CriarUsuarioDTOResponse updateUserOperation(long userId,CriarUsuarioDTORequest dados){
         validarCampos(dados);
-        UserEntity usuario =userRepository.buscarUsuarioPorNome(dados.getUsername());
+        UserEntity usuario = userRepository.buscarUsuarioPorId(userId);
 
         usuario.setUsername(dados.getUsername());
         usuario.setAvatar(dados.getAvatar());

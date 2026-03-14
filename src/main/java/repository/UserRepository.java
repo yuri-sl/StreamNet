@@ -17,8 +17,8 @@ public class UserRepository implements PanacheRepository<UserEntity> {
         return find("where username = ?1", criarUsuarioDTORequest.getUsername()).stream().toList();
     }
 
-    public List<UserEntity> buscarUsuarioPorId(Long userId){
-        return find("where id = ?1",userId).stream().toList();
+    public UserEntity buscarUsuarioPorId(Long userId){
+        return find("where id = ?1",userId).stream().toList().getFirst();
     }
 
     public UserEntity buscarUsuarioPorNome(String username){

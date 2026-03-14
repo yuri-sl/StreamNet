@@ -65,9 +65,10 @@ public class UserResource {
     }
 
     @PUT
-    public RestResponse<?> editarUsuario(CriarUsuarioDTORequest dadosInput){
+    @Path("/{userId}")
+    public RestResponse<?> editarUsuario(@PathParam("userId")long userId,CriarUsuarioDTORequest dadosInput){
         try{
-            return RestResponse.status(Response.Status.fromStatusCode(201),userService.updateUserOperation(dadosInput));
+            return RestResponse.status(Response.Status.fromStatusCode(201),userService.updateUserOperation(userId,dadosInput));
         } catch (IllegalArgumentException e) {
             return RestResponse.status(Response.Status.BAD_REQUEST,e.getMessage());
         }

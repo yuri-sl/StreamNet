@@ -16,7 +16,7 @@ public class CommentRepository implements PanacheRepository<CommentEntity> {
     UserRepository userRepository;
 
     public List<CommentEntity> fetchCommentsByUserId(long userId){
-        UserEntity usuarioEncontrado = userRepository.buscarUsuarioPorId(userId).getFirst();
+        UserEntity usuarioEncontrado = userRepository.buscarUsuarioPorId(userId);
         return find("WHERE postOwner = ?1",usuarioEncontrado).stream().toList();
     }
 }

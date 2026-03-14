@@ -26,7 +26,7 @@ public class TweetsService {
     @Transactional
     public CriarTweetDTOResponse insertTweet(CriarTweetDTORequest criarTweetDTORequest){
         try{
-            UserEntity usuarioEncontrado = userRepository.buscarUsuarioPorId(criarTweetDTORequest.getUserId()).getFirst();
+            UserEntity usuarioEncontrado = userRepository.buscarUsuarioPorId(criarTweetDTORequest.getUserId());
 
             CriarUsuarioDTOResponse dtoUsuarioEncontrado  = CriarUsuarioDTOResponse.builder()
                     .id(usuarioEncontrado.getId())

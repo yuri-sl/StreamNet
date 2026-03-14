@@ -143,6 +143,31 @@ class UsuarioTest {
         assertEquals(204,response.getStatusCode());
     }
 
+    @Test
+    @DisplayName("Deve conseguir editar um usuário")
+    public void editarUsuarioPorId(){
+        CriarUsuarioDTOResponse dados = userService.adicionarUsuario(dados_user3);
+
+        dados_user3.setUsername("yhwach");
+        dados_user3.setAvatar("yhwach.jpg");
+
+        var response =
+                given()
+                        .contentType(ContentType.JSON)
+                        .pathParam("userId",dados.getId())
+                        .body(dados_user3)
+                        .when()
+                        .put(apiUrl+"/{userId}")
+                        .then()
+                        .extract().response();
+
+        CriarUsuarioDTOResponse dadosResposta = response.as(CriarUsuarioDTOResponse.class);
+        assertEquals(201,response.getStatusCode());
+        assertEquals(dados_user3.getUsername(),dadosResposta.getUsername());
+        assertEquals(dados_user3.getAvatar(),dadosResposta.getAvatar());
+
+    }
+
 
 
 
