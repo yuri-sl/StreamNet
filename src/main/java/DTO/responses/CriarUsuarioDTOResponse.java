@@ -31,4 +31,13 @@ public class CriarUsuarioDTOResponse {
                 .followingList(FollowerDTO.mapearEntidadeDTO(u.getFollowerList()))
                 .build();
     }
+    public static List<CriarUsuarioDTOResponse> mapearEntidadeDTO(List<UserEntity> listaEntidade){
+        List<CriarUsuarioDTOResponse> listaUsuariosDTO = new ArrayList<>();
+        CriarUsuarioDTOResponse criarUsuarioDTOResponse;
+        for(UserEntity usuario : listaEntidade){
+            criarUsuarioDTOResponse = mapearEntidadeDTO(usuario);
+            listaUsuariosDTO.add(criarUsuarioDTOResponse);
+        }
+        return listaUsuariosDTO;
+    }
 }

@@ -3,23 +3,18 @@ package service;
 import DTO.requests.CriarUsuarioDTORequest;
 import DTO.responses.CriarUsuarioDTOResponse;
 import DTO.responses.FetchUserResponseDTO;
-import DTO.responses.FollowerDTO;
+import DTO.responses.GetUserDTO;
 import entity.UserEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.core.Response;
 import lombok.AllArgsConstructor;
-import org.jboss.resteasy.reactive.RestResponse;
 import repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @AllArgsConstructor
 @ApplicationScoped
-//Dá erro se eu tirar o AllArgsConstructor do UsuarioService. Pq q eu preciso dele?
 public class UserService {
-
 
     final UserRepository userRepository;
 
@@ -30,61 +25,50 @@ public class UserService {
         }
         return usuarioEncontrado;
     }
+
     public UserEntity verificarUsuarioExiste(long userId){
-        Optional<UserEntity> usuarioEncontrado = userRepository.findByIdOptional(userId);
-        if(usuarioEncontrado.isEmpty()) {
-            throw new IllegalArgumentException("usuário não encontrado");
-        }
-        return usuarioEncontrado.get();
+        return userRepository.findByIdOptional(userId)
+                .orElseThrow(() -> new IllegalArgumentException("usuário não encontrado"));
     }
 
     public UserEntity fazerLoginSistema(String username){
-
         return verificarUsuarioExiste(username);
     }
 
     @Transactional
     public CriarUsuarioDTOResponse adicionarUsuario(CriarUsuarioDTORequest usuarioDTO){
-        this.validarCampos(usuarioDTO);
-       List<UserEntity> listaUsuarios  = userRepository.verificarUsuarioExiste(usuarioDTO);
+        validarCampos(usuarioDTO);
+        List<UserEntity> listaUsuarios = userRepository.verificarUsuarioExiste(usuarioDTO);
 
-       if(listaUsuarios.isEmpty()){
-           UserEntity userCreated = UserEntity.builder()
-                   .avatar(usuarioDTO.getAvatar())
-                   .username(usuarioDTO.getUsername())
-                   .build();
-           userRepository.persist(userCreated);
-           userRepository.flush();
-           return CriarUsuarioDTOResponse.builder()
-                   .id(userCreated.getId())
-                   .avatar(userCreated.getAvatar())
-                   .username(userCreated.getUsername())
-                   .followersList(FollowerDTO.mapearEntidadeDTO(userCreated.getFollowedList()))
-                   .followingList(FollowerDTO.mapearEntidadeDTO(userCreated.getFollowerList())).build();
-       } else{
-           throw new java.lang.RuntimeException("Usuario ja existente no sistema");
-       }
-    };
+        if(listaUsuarios.isEmpty()){
+            UserEntity userCreated = UserEntity.builder()
+                    .avatar(usuarioDTO.getAvatar())
+                    .username(usuarioDTO.getUsername())
+                    .build();
+            userRepository.persist(userCreated);
+            userRepository.flush();
+            return CriarUsuarioDTOResponse.mapearEntidadeDTO(userCreated);
+        } else {
+            throw new RuntimeException("Usuario ja existente no sistema");
+        }
+    }
 
     public FetchUserResponseDTO buscarUsuarioPorNome(String username){
-        UserEntity user =  this.userRepository.buscarUsuarioPorNome(username);
-        FetchUserResponseDTO fetchUserResponseDTO = FetchUserResponseDTO.builder()
-                .id(user.getId()).name(user.getUsername()).avatar(user.getAvatar()).build();
-        return  fetchUserResponseDTO;
+        UserEntity user = userRepository.buscarUsuarioPorNome(username);
+        return FetchUserResponseDTO.mapearEntidadeDTO(user);
     }
+
     public void validarCampos(CriarUsuarioDTORequest usuarioDTO){
-        if(usuarioDTO.getUsername() == null || usuarioDTO.getAvatar() == null){
-            throw new IllegalArgumentException("Todos os campos devem estar preenchidos");
-        }
-        if(usuarioDTO.getUsername().isBlank() || usuarioDTO.getAvatar().isBlank() ){
+        if(usuarioDTO.getUsername() == null || usuarioDTO.getAvatar() == null
+                || usuarioDTO.getUsername().isBlank() || usuarioDTO.getAvatar().isBlank()){
             throw new IllegalArgumentException("Todos os campos devem estar preenchidos");
         }
     }
 
     @Transactional
-    public CriarUsuarioDTOResponse updateUserOperation(long userId,CriarUsuarioDTORequest dados){
+    public CriarUsuarioDTOResponse updateUserOperation(long userId, CriarUsuarioDTORequest dados){
         validarCampos(dados);
-        UserEntity usuario = userRepository.buscarUsuarioPorId(userId);
+        UserEntity usuario = verificarUsuarioExiste(userId);
 
         usuario.setUsername(dados.getUsername());
         usuario.setAvatar(dados.getAvatar());
@@ -92,17 +76,19 @@ public class UserService {
         userRepository.persist(usuario);
         userRepository.flush();
 
-        return CriarUsuarioDTOResponse.builder()
-                .id(usuario.getId())
-                .avatar(usuario.getAvatar())
-                .username(usuario.getUsername())
-                .build();
+        return CriarUsuarioDTOResponse.mapearEntidadeDTO(usuario);
     }
 
     @Transactional
     public void deleteUserById(long userId){
-        this.userRepository.deleteById(userId);
-
+        userRepository.deleteById(userId);
     }
 
+    public List<CriarUsuarioDTOResponse> listarTodosUsuarios(){
+        return CriarUsuarioDTOResponse.mapearEntidadeDTO(userRepository.buscarTodosUsuarios());
+    }
+
+    public GetUserDTO listarUsuario(long userId){
+        return GetUserDTO.mapearEntidadeDTO(verificarUsuarioExiste(userId));
+    }
 }

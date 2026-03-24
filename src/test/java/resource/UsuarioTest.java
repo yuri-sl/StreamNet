@@ -3,8 +3,10 @@ package resource;
 import DTO.requests.CriarUsuarioDTORequest;
 import DTO.responses.CriarTweetDTOResponse;
 import DTO.responses.CriarUsuarioDTOResponse;
+import DTO.responses.GetUserDTO;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import jakarta.inject.Inject;
@@ -14,6 +16,7 @@ import repository.UserRepository;
 import service.UserService;
 
 import java.net.URI;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
@@ -162,9 +165,58 @@ class UsuarioTest {
                         .extract().response();
 
         CriarUsuarioDTOResponse dadosResposta = response.as(CriarUsuarioDTOResponse.class);
-        assertEquals(201,response.getStatusCode());
+        assertEquals(200,response.getStatusCode());
         assertEquals(dados_user3.getUsername(),dadosResposta.getUsername());
         assertEquals(dados_user3.getAvatar(),dadosResposta.getAvatar());
+
+    }
+
+    @Test
+    @DisplayName("Should fetch All users")
+    public void listarTodosUsuarios(){
+        userService.adicionarUsuario(dados_user1);
+        userService.adicionarUsuario(dados_user2);
+        userService.adicionarUsuario(dados_user3);
+
+        var response =
+                given()
+                        .when()
+                        .get(apiUrl+"/listall")
+                        .then()
+                        .extract().response();
+
+        List<CriarUsuarioDTOResponse> listaUsuarioResponse = response.as(new TypeRef<List<CriarUsuarioDTOResponse>>() {
+        });
+
+        assertEquals(200,response.getStatusCode());
+        assertNotNull(listaUsuarioResponse);
+        assertFalse(listaUsuarioResponse.isEmpty());
+    }
+
+
+    @Test
+    @DisplayName("Should fetch a user given the id")
+    public void listarUsuariosDadoId(){
+
+        CriarUsuarioDTOResponse criarUsuarioDTOResponse =userService.adicionarUsuario(dados_user1);
+
+        var response =
+                given()
+                    .contentType(ContentType.JSON)
+                    .pathParam("userId",criarUsuarioDTOResponse.getId())
+                .when()
+                        .get(apiUrl+"/{userId}")
+                        .then()
+                        .extract().response();
+
+        GetUserDTO dtoResposta = response.as(GetUserDTO.class);
+
+        assertEquals(200,response.getStatusCode());
+        assertNotNull(dtoResposta.getId());
+        assertNotNull(dtoResposta.getUsername());
+        assertNotNull(dtoResposta.getAvatar());
+        assertNotNull(dtoResposta.getFollowersList());
+        assertNotNull(dtoResposta.getFollowingList());
 
     }
 
